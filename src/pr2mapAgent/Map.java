@@ -8,7 +8,7 @@ public class Map {
     int height;
     int width;
     File file;
-    int[][] map;
+    int[][] matrix;
 
     Map (String filename) {
         file = new File(filename);
@@ -25,17 +25,17 @@ public class Map {
         height = scan.nextInt();
         width = scan.nextInt();
 
-        map = new int[height][width];
+        matrix = new int[height][width];
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                map[i][j] = scan.nextInt();
+                matrix[i][j] = scan.nextInt();
             }
         }
     }
 
-    public int[][] getMap() {
-        return map;
+    public int[][] getMatrix() {
+        return matrix;
     }
 
     public int getHeight() {
@@ -49,10 +49,10 @@ public class Map {
     public void printMap() {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                if (map[i][j] == 0) {
+                if (matrix[i][j] == 0) {
                     System.out.print(" ");
                 }
-                System.out.print(map[i][j] + " ");
+                System.out.print(matrix[i][j] + " ");
             }
             System.out.println();
         }
