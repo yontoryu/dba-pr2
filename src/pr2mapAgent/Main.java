@@ -7,5 +7,11 @@ public class Main {
         String filename = "maps/mapWithVerticalWall.txt";
         Map map = new Map(filename);
         map.printMap();
+        System.out.println();
+        System.out.println("------------------------------------------------");
+
+        Environment env = new Environment(map);
+        env.printEnvironment();
+
     }
 }
