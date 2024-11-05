@@ -8,10 +8,10 @@ import java.util.List;
 
 public class SAgent extends Agent {
     private Environment environment;
-    private int[] position; // agents current position
-    private int[] goal; // target's position
-    private int energyConsumed;
-    private List<int[]> path; //  agent's path
+    private int[] position; // agent's current position
+    private int[] goal; // target position
+    private int energyConsumed = 0 ;
+    private List<int[]> path = new ArrayList<>(); //  agent's path
 
     @Override
     protected void setup() {
@@ -19,14 +19,14 @@ public class SAgent extends Agent {
         String mapFile = "maps/mapWithVerticalWall.txt";
         this.environment = new Environment(mapFile);
         this.position = new int[] {0, 0}; // initial position
-        this.goal = new int[] {4, 4}; // target's position
+        this.goal = new int[] {4, 4}; // target position (example)
         this.energyConsumed = 0;
         this.path = new ArrayList<>();
 
         SequentialBehaviour seq = new SequentialBehaviour();
         seq.addSubBehaviour(new PerceptionBehaviour(this));
         seq.addSubBehaviour(new DecisionMakingBehaviour(this));
-       // seq.addSubBehaviour(new MovementBehaviour(this));
+        seq.addSubBehaviour(new MovementBehaviour(this));
         addBehaviour(seq);
     }
 
