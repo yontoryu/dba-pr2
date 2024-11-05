@@ -12,19 +12,24 @@ public class Environment {
     int height;
     int width;
 
-    public Environment(Map map) {
-        this.map = map;
-
-        this.height = map.getHeight();
-        this.width = map.getWidth();
-
+    public Environment() {
         startPos = new int[]{0, 0};
         targetPos = new int[]{0, 0};
+    }
+
+    public void setup(Map map) {
+        loadMap(map);
         setStartAndTarget();
         currentPos = startPos.clone();
     }
 
-    void setStartAndTarget() {
+    private void loadMap(Map map) {
+        this.map = map;
+        this.height = map.getHeight();
+        this.width = map.getWidth();
+    }
+
+    private void setStartAndTarget() {
         Random rand = new Random();
         do {
             startPos[0] = rand.nextInt(height);
