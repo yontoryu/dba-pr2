@@ -1,20 +1,39 @@
 package pr2mapAgent;
 
 import jade.core.Agent;
-import jade.core.behaviours.OneShotBehaviour;
 
 public class Scout extends Agent {
 
     Environment env;
     int energy;
+    int[] currentPos;
 
     @Override
     protected void setup() {
         energy = 0;
-
         env = new Environment();
-        addBehaviour(new LoadMapBehavior(env));
+
+        //load map
+        addBehaviour(new LoadMapBehaviour(env));
+
+        //start walking
+        addBehaviour(new WalkBehaviour(this));
+    }
+
+    int getEnergy() {
+        return energy;
+    }
+
+    void incrementEnergy(int energy) {
+        this.energy++;
+    }
+
+    int[] getCurrentPos() {
+        return currentPos;
+    }
+
+    void setCurrentPos(int[] currentPos) {
+        this.currentPos = currentPos;
     }
 
 }
-

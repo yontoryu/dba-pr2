@@ -6,11 +6,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class LoadMapBehavior extends OneShotBehaviour {
+public class LoadMapBehaviour extends OneShotBehaviour {
 
     Environment env;
 
-    public LoadMapBehavior(Environment env) {
+    public LoadMapBehaviour(Environment env) {
         this.env = env;
     }
 

@@ -8,7 +8,6 @@ public class Environment {
     int[][] path;
     int[] startPos;
     int[] targetPos;
-    int[] currentPos;
     int height;
     int width;
 
@@ -20,7 +19,6 @@ public class Environment {
     public void setup(Map map) {
         loadMap(map);
         setStartAndTarget();
-        currentPos = startPos.clone();
     }
 
     private void loadMap(Map map) {
@@ -62,6 +60,14 @@ public class Environment {
             }
             System.out.println();
         }
+    }
+
+    int[] getTargetPos() {
+        return targetPos;
+    }
+
+    int[] getStartPos() {
+        return startPos;
     }
 
 }
