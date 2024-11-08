@@ -39,7 +39,7 @@ public class GridLayoutManager extends JFrame {
         grass = new ImageIcon(new ImageIcon("grass.png").getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH));
         obstacle = new ImageIcon(new ImageIcon("wall.png").getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH));
         //robot = new ImageIcon(new ImageIcon("raccoon2.png").getImage().getScaledInstance(30, 40, Image.SCALE_SMOOTH));
-        Image img = Toolkit.getDefaultToolkit().getImage("raccoon2.png");
+        Image img = Toolkit.getDefaultToolkit().getImage("raccoon1.png");
         robot = new ImageIcon(img.getScaledInstance(50, 50, Image.SCALE_SMOOTH));
         System.out.println("Image Load Status: " + robot.getImageLoadStatus());
 
