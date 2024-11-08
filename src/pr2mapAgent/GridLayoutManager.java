@@ -3,208 +3,185 @@ package pr2mapAgent;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Scanner;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.border.LineBorder;
-
-import static javax.swing.text.StyleConstants.setIcon;
+import java.util.Scanner;
 
 public class GridLayoutManager extends JFrame {
 
-    private Container contents;
     private JPanel gridPanel;
-    private JButton[][] squares;
+    private CellPanel[][] squares;
     private int[][] matrix;
     private int height = 10;
     private int width = 10;
 
-    private Color colorRed = Color.RED; // color for obstacles
-    private Color colorWhite = Color.WHITE; // color for free cells
+    private BufferedImage grassImage;
+    private BufferedImage raccoonImage;
+    private BufferedImage obstacleImage; // Image of obstacles (walls)
+    private BufferedImage endImage; // Image of the target
 
-    private ImageIcon robot;  // image of the agent
-    private ImageIcon endIcon; // image of the target
-    private ImageIcon obstacle; // image of the obstacles
-    private ImageIcon grass; //image for free cells
-
-    private int[] startPos = new int[2];  // start position
-    private int[] endPos = new int[2];  // target position
     private boolean startSet = false;
     private boolean endSet = false;
+    private int[] startPos = new int[2];
+    private int[] endPos = new int[2];  // Target position
 
     public GridLayoutManager(String filename) {
-        super("GUI GridLayout Manager - (click a valid square to set the start and the target )");
+        super("GUI GridLayout Manager");
 
-        endIcon = new ImageIcon(new ImageIcon("stink.png").getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH));
-        grass = new ImageIcon(new ImageIcon("grass.png").getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH));
-        obstacle = new ImageIcon(new ImageIcon("wall.png").getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH));
-        //robot = new ImageIcon(new ImageIcon("raccoon2.png").getImage().getScaledInstance(30, 40, Image.SCALE_SMOOTH));
-        Image img = Toolkit.getDefaultToolkit().getImage("raccoon1.png");
-        robot = new ImageIcon(img.getScaledInstance(50, 50, Image.SCALE_SMOOTH));
-        System.out.println("Image Load Status: " + robot.getImageLoadStatus());
+        // Load images for cells
+        try {
+            grassImage = ImageIO.read(new File("grass.png"));
+            raccoonImage = ImageIO.read(new File("raccoon2.png"));
+            obstacleImage = ImageIO.read(new File("wall.png"));
+            endImage = ImageIO.read(new File("stink.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
-
-        // initialize the environment
-        contents = getContentPane();
-        contents.setLayout(new BorderLayout()); // use BorderLayout to put the reset button inn the bottom
-
-
-        //creation of the matrix for the buttons
-        squares = new JButton[height][width];
+        gridPanel = new JPanel(new GridLayout(height, width));
+        squares = new CellPanel[height][width];
         matrix = new int[height][width];
 
-        // initialize the grid panel
-        gridPanel = new JPanel(new GridLayout(height, width));
-
-
-        // read the file
+        // Load the map from file
         try {
             readMapFromFile(filename);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
-        // create and add buttons in the grid
-        createButtons();
+        createCells();
+        add(gridPanel, BorderLayout.CENTER);
 
-        contents.add(gridPanel, BorderLayout.CENTER);
-        contents.revalidate();
-        contents.repaint();
-
-        // add action listener in the buttons
-        ButtonHandler buttonHandler = new ButtonHandler();
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                squares[i][j].addActionListener(buttonHandler);
-            }
-        }
-
-
-
-        // add the  "Reset" button
+        // Add Reset button
         JButton resetButton = new JButton("Reset");
-        resetButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                resetPositions();
-            }
-        });
-        contents.add(resetButton, BorderLayout.SOUTH);
+        resetButton.addActionListener(e -> resetPositions());
+        add(resetButton, BorderLayout.SOUTH);
+
+        setSize(600, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
     }
 
-    //read the map file
+    private void createCells() {
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                squares[i][j] = new CellPanel(i, j);
+                squares[i][j].setBorder(new LineBorder(Color.BLACK, 1));
+                setCellStyle(i, j); // Set initial cell style
+                gridPanel.add(squares[i][j]);
+            }
+        }
+    }
+
+    private void setCellStyle(int i, int j) {
+        // Set obstacle or free cell based on matrix value
+        if (matrix[i][j] == -1) {
+            squares[i][j].setBackground(Color.RED);  // Mark obstacle
+        } else {
+            squares[i][j].setBackground(Color.WHITE);  // Mark free cell
+        }
+    }
+
     private void readMapFromFile(String filename) throws FileNotFoundException {
         File file = new File(filename);
         Scanner scanner = new Scanner(file);
-
-        // read the map's dimensions
         height = scanner.nextInt();
         width = scanner.nextInt();
         matrix = new int[height][width];
-
-        // read the map
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 matrix[i][j] = scanner.nextInt();
             }
         }
-
         scanner.close();
     }
 
-    // creation of the buttons
-    private void createButtons() {
+    private void resetPositions() {
+        startSet = false;
+        endSet = false;
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                squares[i][j] = new JButton();
-                setButtonStyle(i , j); //define the button color
-                squares[i][j].setBorder(new LineBorder(Color.BLACK, 2));
-                gridPanel.add(squares[i][j]);
+                squares[i][j].setRaccoon(false);
+                squares[i][j].setTarget(false);
             }
         }
         gridPanel.repaint();
     }
 
-    // id the value is -1 the button is red , if the value is 0 the button is white
-    private void setButtonStyle(int i, int j) {
-        if (matrix[i][j] == -1) {
-            squares[i][j].setBackground(colorRed);
-            squares[i][j].setIcon(obstacle);
-        } else if (matrix[i][j] == 0) {
-            squares[i][j].setIcon(grass);
-        }
-        squares[i][j].setPreferredSize(new Dimension(50, 50));
-    }
+    private class CellPanel extends JPanel {
+        private int row, col;
+        private boolean hasRaccoon = false;
+        private boolean hasTarget = false;
 
+        public CellPanel(int row, int col) {
+            this.row = row;
+            this.col = col;
 
-    // action for the buttons when they're pushed
-    private class ButtonHandler implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            JButton source = (JButton) e.getSource();
-            for (int i = 0; i < height; i++) {
-                for (int j = 0; j < width; j++) {
-                    if (squares[i][j] == source) {
-                        // check if it's an obstacle
-                        if (matrix[i][j] == -1) {
-                            JOptionPane.showMessageDialog(null, "You can't set the start position in an obstacle .");
-                            return;
-                        }
-                        // Set start position if not set
-                        if (!startSet) {
-                            startPos[0] = i;
-                            startPos[1] = j;
-                            squares[i][j].setIcon(grass);
-                            squares[i][j].setIcon(robot);
-                            startSet = true;
-                        }
-                        // Set end position if not set and it's not the start position
-                        else if (!endSet) {
-                            if (i == startPos[0] && j == startPos[1]) {
-                                JOptionPane.showMessageDialog(null, "The end position cannot be the same as the start position.");
-                            }
-                            else if (matrix[i][j] == -1) {
-                                JOptionPane.showMessageDialog(null, "You can't set the end position in an obstacle .");
-                                return;
-                            } else {
-                                endPos[0] = i;
-                                endPos[1] = j;
-                                squares[i][j].setIcon(endIcon);
-                                endSet = true;
-                            }
+            // Mouse listener to set start or target position
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (matrix[row][col] == -1) {
+                        JOptionPane.showMessageDialog(null, "Obstacle cell. Cannot place raccoon or target here.");
+                        return;
+                    }
+                    // Set start position if not set
+                    if (!startSet) {
+                        startPos[0] = row;
+                        startPos[1] = col;
+                        hasRaccoon = true;
+                        startSet = true;
+                    }
+                    // Set target position if not set and it's not the start position
+                    else if (!endSet) {
+                        if (row == startPos[0] && col == startPos[1]) {
+                            JOptionPane.showMessageDialog(null, "The target position cannot be the same as the start position.");
+                        } else {
+                            endPos[0] = row;
+                            endPos[1] = col;
+                            hasTarget = true;
+                            endSet = true;
                         }
                     }
+                    gridPanel.repaint();
                 }
+            });
+        }
+
+        public void setRaccoon(boolean hasRaccoon) {
+            this.hasRaccoon = hasRaccoon;
+        }
+
+        public void setTarget(boolean hasTarget) {
+            this.hasTarget = hasTarget;
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+
+            // Draw appropriate image based on cell content
+            if (matrix[row][col] == -1) {
+                g.drawImage(obstacleImage, 0, 0, getWidth(), getHeight(), null);
+            } else {
+                g.drawImage(grassImage, 0, 0, getWidth(), getHeight(), null);
+            }
+            if (hasRaccoon) {
+                g.drawImage(raccoonImage, 0, 0, getWidth(), getHeight(), null);
+            }
+            if (hasTarget) {
+                g.drawImage(endImage, 0, 0, getWidth(), getHeight(), null);
             }
         }
     }
 
-    // reset positions
-    private void resetPositions() {
-        startSet = false;
-        endSet = false;
-
-        // Επαναφορά των κουμπιών και των εικόνων
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                // if matrix is empty we put the grass icon
-                if (matrix[i][j] == -1) {
-                    squares[i][j].setBackground(colorRed);
-                    squares[i][j].setIcon(obstacle);
-                } else if (matrix[i][j] == 0) {
-                    squares[i][j].setBackground(colorWhite);
-                    squares[i][j].setIcon(grass);
-                } else {
-                    squares[i][j].setIcon(null); //we clean the other cells
-                }
-            }
-        }
-    }
-
-    // main method
     public static void main(String[] args) {
         String filename = "maps/mapWithDiagonalWall.txt";
-        GridLayoutManager gui = new GridLayoutManager(filename);
-        gui.setSize(600, 600);
-        gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        gui.setVisible(true);
+        new GridLayoutManager(filename);
     }
 }
