@@ -181,7 +181,36 @@ public class GridLayoutManager extends JFrame {
     }
 
     public static void main(String[] args) {
-        String filename = "maps/mapWithDiagonalWall.txt";
-        new GridLayoutManager(filename);
+        // List of the maps
+        String[] mapFiles = {
+                "maps/mapWithDiagonalWall.txt",
+                "maps/mapWithHorizontalWall.txt",
+                "maps/mapWithVerticalWall.txt",
+                "maps/mapWithoutObstacle.txt",
+                "maps/mapWithComplexObstacle1.txt",
+                "maps/mapWithComplexObstacle2.txt",
+                "maps/mapWithComplexObstacle3.txt",
+        };
+
+        //show the list of map choices
+        String selectedFile = (String) JOptionPane.showInputDialog(
+                null,
+                "Choose the map file:",
+                "Choose map",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                mapFiles,
+                mapFiles[0]
+        );
+
+
+        if (selectedFile != null && !selectedFile.isEmpty()) {
+            //if a map is chosen
+            new GridLayoutManager(selectedFile);
+        } else {
+            // if the user chancel the choice the program is finished
+            System.out.println("No file has been selected.");
+            System.exit(0);
+        }
     }
 }
