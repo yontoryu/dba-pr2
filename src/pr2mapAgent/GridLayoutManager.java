@@ -15,22 +15,25 @@ public class GridLayoutManager extends JFrame {
 
     private JPanel gridPanel;
     private CellPanel[][] squares;
-    private int[][] matrix;
-    private int height = 10;
-    private int width = 10;
+    private int height;
+    private int width;
+    private Environment env;
 
     private BufferedImage grassImage;
     private BufferedImage raccoonImage;
     private BufferedImage obstacleImage; // Image of obstacles (walls)
     private BufferedImage endImage; // Image of the target
 
-    private boolean startSet = false;
     private boolean endSet = false;
+    private boolean startSet = false;
+    private boolean positionsSet = false;
     private int[] startPos = new int[2];
     private int[] endPos = new int[2];  // Target position
 
-    public GridLayoutManager(String filename) {
+    public GridLayoutManager(Environment env) {
         super("GUI GridLayout Manager");
+
+        this.env = env;
 
         // Load images for cells
         try {
@@ -43,28 +46,54 @@ public class GridLayoutManager extends JFrame {
             System.exit(1);
         }
 
+        width = env.getMap().getWidth();
+        height = env.getMap().getHeight();
+
         gridPanel = new JPanel(new GridLayout(height, width));
         squares = new CellPanel[height][width];
-        matrix = new int[height][width];
-
-        // Load the map from file
-        try {
-            readMapFromFile(filename);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
 
         createCells();
         add(gridPanel, BorderLayout.CENTER);
 
+        // Add Reset and Start buttons in the south
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10)); // Panel with horizontal layout
+
         // Add Reset button
         JButton resetButton = new JButton("Reset");
         resetButton.addActionListener(e -> resetPositions());
-        add(resetButton, BorderLayout.SOUTH);
+        resetButton.setPreferredSize(new Dimension(300, 40));
+        buttonPanel.add(resetButton); // Add Reset button to the panel
 
-        setSize(600, 600);
+        // Add Start button
+        JButton startButton = new JButton("Start");
+        startButton.addActionListener(e -> startRunning());
+        startButton.setPreferredSize(new Dimension(300, 40));
+        buttonPanel.add(startButton); // Add Start button to the panel
+
+        // Add the button panel to the south
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        // Finalize JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(800, 800); // Adjust size as needed
         setVisible(true);
+    }
+
+    private void startRunning() {
+        positionsSet = true;
+    }
+
+
+    public boolean positionsSet() {
+        return positionsSet;
+    }
+
+    public int[] getStartPos() {
+        return startPos;
+    }
+
+    public int[] getEndPos() {
+        return endPos;
     }
 
     private void createCells() {
@@ -80,25 +109,11 @@ public class GridLayoutManager extends JFrame {
 
     private void setCellStyle(int i, int j) {
         // Set obstacle or free cell based on matrix value
-        if (matrix[i][j] == -1) {
+        if (env.getMap().getMatrix()[i][j] == -1) {
             squares[i][j].setBackground(Color.RED);  // Mark obstacle
         } else {
             squares[i][j].setBackground(Color.WHITE);  // Mark free cell
         }
-    }
-
-    private void readMapFromFile(String filename) throws FileNotFoundException {
-        File file = new File(filename);
-        Scanner scanner = new Scanner(file);
-        height = scanner.nextInt();
-        width = scanner.nextInt();
-        matrix = new int[height][width];
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                matrix[i][j] = scanner.nextInt();
-            }
-        }
-        scanner.close();
     }
 
     private void resetPositions() {
@@ -126,7 +141,7 @@ public class GridLayoutManager extends JFrame {
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    if (matrix[row][col] == -1) {
+                    if (env.getMap().getMatrix()[row][col] == -1) {
                         JOptionPane.showMessageDialog(null, "Obstacle cell. Cannot place raccoon or target here.");
                         return;
                     }
@@ -166,7 +181,7 @@ public class GridLayoutManager extends JFrame {
             super.paintComponent(g);
 
             // Draw appropriate image based on cell content
-            if (matrix[row][col] == -1) {
+            if (env.getMap().getMatrix()[row][col] == -1) {
                 g.drawImage(obstacleImage, 0, 0, getWidth(), getHeight(), null);
             } else {
                 g.drawImage(grassImage, 0, 0, getWidth(), getHeight(), null);
@@ -177,40 +192,6 @@ public class GridLayoutManager extends JFrame {
             if (hasTarget) {
                 g.drawImage(endImage, 0, 0, getWidth(), getHeight(), null);
             }
-        }
-    }
-
-    public static void main(String[] args) {
-        // List of the maps
-        String[] mapFiles = {
-                "maps/mapWithDiagonalWall.txt",
-                "maps/mapWithHorizontalWall.txt",
-                "maps/mapWithVerticalWall.txt",
-                "maps/mapWithoutObstacle.txt",
-                "maps/mapWithComplexObstacle1.txt",
-                "maps/mapWithComplexObstacle2.txt",
-                "maps/mapWithComplexObstacle3.txt",
-        };
-
-        //show the list of map choices
-        String selectedFile = (String) JOptionPane.showInputDialog(
-                null,
-                "Choose the map file:",
-                "Choose map",
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                mapFiles,
-                mapFiles[0]
-        );
-
-
-        if (selectedFile != null && !selectedFile.isEmpty()) {
-            //if a map is chosen
-            new GridLayoutManager(selectedFile);
-        } else {
-            // if the user chancel the choice the program is finished
-            System.out.println("No file has been selected.");
-            System.exit(0);
         }
     }
 }

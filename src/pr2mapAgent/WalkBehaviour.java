@@ -13,8 +13,12 @@ public class WalkBehaviour extends Behaviour {
 
     @Override
     public void action() {
+        int c = 0;
         if(!reachedTarget) {
-
+            if (c == 10) {
+                System.out.println("c " + c);
+                reachedTarget = true;
+            }
         }
     }
 

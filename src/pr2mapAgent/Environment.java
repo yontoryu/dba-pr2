@@ -8,43 +8,47 @@ public class Environment {
     int[][] path;
     int[] startPos;
     int[] targetPos;
-    int height;
-    int width;
 
-    public Environment() {
+    public Environment(Map map) {
         startPos = new int[]{0, 0};
         targetPos = new int[]{0, 0};
-    }
-
-    public void setup(Map map) {
         loadMap(map);
-        setStartAndTarget();
+        setStartAndTargetRandom();
     }
 
     private void loadMap(Map map) {
         this.map = map;
-        this.height = map.getHeight();
-        this.width = map.getWidth();
     }
 
-    private void setStartAndTarget() {
+    private void setStartAndTargetRandom() {
         Random rand = new Random();
         do {
-            startPos[0] = rand.nextInt(height);
-            startPos[1] = rand.nextInt(width);
+            startPos[0] = rand.nextInt(map.getHeight());
+            startPos[1] = rand.nextInt(map.getWidth());
         }
         while (map.getMatrix()[startPos[0]][startPos[1]] == -1);
 
         do {
-            targetPos[0] = rand.nextInt(height);
-            targetPos[1] = rand.nextInt(width);
+            targetPos[0] = rand.nextInt(map.getHeight());
+            targetPos[1] = rand.nextInt(map.getWidth());
         }
         while (map.getMatrix()[targetPos[0]][targetPos[1]] == -1);
     }
 
+    public void setStartAndTarget(int[] start, int[] target) {
+        startPos[0] = start[0];
+        startPos[1] = start[1];
+        targetPos[0] = target[0];
+        targetPos[1] = target[1];
+    }
+
+    Map getMap() {
+        return map;
+    }
+
     void printEnvironment() {
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
+        for (int i = 0; i < map.getHeight(); i++) {
+            for (int j = 0; j < map.getWidth(); j++) {
                 if (i == startPos[0] && j == startPos[1]) {
                     System.out.print("[S]");
                     continue;
