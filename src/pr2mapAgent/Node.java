@@ -1,26 +1,52 @@
 package pr2mapAgent;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Node {
-    int x, y;           // Node positions on the map
-    int gCost, hCost;   // Movement cost and heuristic cost
-    Node parent;        // Parent node to reconstruct the final path
+    int x, y;
+    int gCost, hCost, penalty;
+    List<Node> neighbors;
+    boolean isObstacle;
+
 
     public Node(int x, int y) {
         this.x = x;
         this.y = y;
-        this.gCost = Integer.MAX_VALUE; // Initializes with a high value
+        this.gCost = Integer.MAX_VALUE;
         this.hCost = 0;
-        this.parent = null;
+        this.penalty = 0;
+        this.isObstacle = false;
+        this.neighbors = new ArrayList<Node>();
     }
 
-    // Calculates the total cost for A*
+    public Node(int x, int y, boolean isObstacle) {
+        this.x = x;
+        this.y = y;
+        this.gCost = Integer.MAX_VALUE;
+        this.hCost = 0;
+        this.penalty = 0;
+        this.neighbors = new ArrayList<Node>();
+        this.isObstacle = isObstacle;
+    }
+
     public int fCost() {
-        return gCost + hCost;
+        return gCost + hCost + penalty;
     }
 
-    // Check if two nodes are the same (same position)
+    public void penalize(int penalty) {
+        this.penalty += penalty;
+    }
+
+    public void addNeighbor(Node neighbor) {
+        this.neighbors.add(neighbor);
+    }
+
+    public List<Node> getNeighbors() {
+        return neighbors;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
