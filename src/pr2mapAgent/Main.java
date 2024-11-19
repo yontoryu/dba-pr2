@@ -31,9 +31,10 @@ public class Main {
 
         if (selectedFile != null && !selectedFile.isEmpty()) {
             //if a map is chosen
-            Environment env = new Environment(new Map(selectedFile));
+            Map map = new Map(selectedFile);
+            Environment env = new Environment(map.getWidth(), map.getHeight(), map);
 
-            GridLayoutManager glm = new GridLayoutManager(env);
+            GridLayoutManager glm = new GridLayoutManager(map);
 
             while (!glm.positionsSet()) {
                 try {
@@ -47,10 +48,10 @@ public class Main {
             System.out.println("Start [" + glm.getStartPos()[0] + ", " + glm.getStartPos()[1] + "]");
             System.out.println("Target [" + glm.getEndPos()[0] + ", " + glm.getEndPos()[1] + "]");
 
-            Object[] positions = {glm.getStartPos(), glm.getEndPos()};
+            Object[] arguments = {glm.getStartPos(), glm.getEndPos(), env};
             Scout raccoon = new Scout();
 
-            raccoon.startAgent(positions);
+            raccoon.startAgent(arguments);
 
         } else {
             // if the user chancel the choice the program is finished
