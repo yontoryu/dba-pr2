@@ -47,11 +47,10 @@ public class Main {
             System.out.println("Start [" + glm.getStartPos()[0] + ", " + glm.getStartPos()[1] + "]");
             System.out.println("Target [" + glm.getEndPos()[0] + ", " + glm.getEndPos()[1] + "]");
 
-//            Object[] args = {""};
-            Scout raccoon = new Scout(glm.getStartPos(), glm.getEndPos());
+            Object[] positions = {glm.getStartPos(), glm.getEndPos()};
+            Scout raccoon = new Scout();
 
-            raccoon.startAgent();
-
+            raccoon.startAgent(positions);
 
         } else {
             // if the user chancel the choice the program is finished

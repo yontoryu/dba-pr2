@@ -14,18 +14,25 @@ public class Scout extends Agent {
     int[] currentPos;
     int[] targetPos;
 
-    public Scout(int[] start, int[] target) {
-        currentPos = start.clone();
-        targetPos = target.clone();
-        energy = 0;
+    public Scout() {
+        super();
     }
+
+//    public Scout(int[] start, int[] target) {
+//        currentPos = start.clone();
+//        targetPos = target.clone();
+//        energy = 0;
+//    }
 
     @Override
     protected void setup() {
         // Retrieve startup arguments
         Object[] args = getArguments();
+
         if (args != null && args.length > 0) {
-            System.out.println("Agent started with argument: " + args[0]);
+            currentPos = ((int[]) args[0]).clone();
+            targetPos = ((int[]) args[1]).clone();
+            System.out.println("Agent started with argument: Start - " + currentPos[0] + ", " + currentPos[1] + ", End - " + targetPos[0] + ", " + targetPos[1]);
         } else {
             System.out.println("No arguments provided.");
         }
@@ -50,7 +57,7 @@ public class Scout extends Agent {
         this.currentPos = currentPos;
     }
 
-    void startAgent() {
+    void startAgent(Object[] args) {
         // Step 1: Get the JADE runtime instance
         Runtime jadeRuntime = Runtime.instance();
 
@@ -62,10 +69,10 @@ public class Scout extends Agent {
 
         try {
             // Step 3: Start your agent(s)
-            String agentName = "badi"; // Name of your agent
+            String agentName = "raccoonie"; // Name of your agent
             String agentClass = "pr2mapAgent.Scout"; // Fully qualified name of your agent class
 
-            AgentController agent = mainContainer.createNewAgent(agentName, agentClass, null);
+            AgentController agent = mainContainer.createNewAgent(agentName, agentClass, args);
             agent.start(); // Start the agent
         } catch (Exception e) {
             e.printStackTrace();
