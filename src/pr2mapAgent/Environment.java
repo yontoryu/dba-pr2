@@ -8,19 +8,21 @@ public class Environment {
     int width;
     int height;
     Node[][] exploredArea;
+    private Map map;
 
-    public Environment(int width, int height) {
+    public Environment(int width, int height, Map map) {
         this.width = width;
         this.height = height;
-        exploredArea = new Node[height][width];
+        this.exploredArea = new Node[height][width];
+        this.map = map;
     }
 
     public void setNode(int x, int y, Node n) {
-        exploredArea[x][y] = n;
+        exploredArea[y][x] = n;
     }
 
     public Node getNode(int x, int y) {
-        return exploredArea[x][y];
+        return exploredArea[y][x];
     }
 
     public boolean isInBounds(int x, int y) {
@@ -28,8 +30,22 @@ public class Environment {
     }
 
     public boolean yetDiscovered(int x, int y) {
-        return exploredArea[x][y] != null;
+        return exploredArea[y][x] != null;
     }
 
-    public
+    public boolean yetDiscovered(Node current) {
+        return exploredArea[current.y][current.x] != null;
+    }
+
+    public int see(Node current, int x, int y) {
+        return yetDiscovered(current) ? map.getMatrix()[y][x] : 1;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
 }

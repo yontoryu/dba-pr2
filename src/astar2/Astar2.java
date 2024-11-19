@@ -14,8 +14,9 @@ public class Astar2 {
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
     };
 
-    static Node start = new Node(0, 0);
-    static Node goal = new Node(9, 9);
+
+    static Node start = new Node(9, 0);
+    static Node goal = new Node(9, 3);
 
     static int width = grid[0].length;
     static int height = grid.length;

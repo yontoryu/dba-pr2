@@ -149,8 +149,8 @@ public class GridLayoutManager extends JFrame {
                     }
                     // Set start position if not set
                     if (!startSet) {
-                        startPos[0] = row;
-                        startPos[1] = col;
+                        startPos[0] = col;
+                        startPos[1] = row;
                         hasRaccoon = true;
                         startSet = true;
                     }
@@ -159,8 +159,8 @@ public class GridLayoutManager extends JFrame {
                         if (row == startPos[0] && col == startPos[1]) {
                             JOptionPane.showMessageDialog(null, "The target position cannot be the same as the start position.");
                         } else {
-                            endPos[0] = row;
-                            endPos[1] = col;
+                            endPos[0] = col;
+                            endPos[1] = row;
                             hasTarget = true;
                             endSet = true;
                         }

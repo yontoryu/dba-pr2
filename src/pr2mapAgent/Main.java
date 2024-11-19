@@ -31,9 +31,8 @@ public class Main {
 
         if (selectedFile != null && !selectedFile.isEmpty()) {
             //if a map is chosen
-
             Map map = new Map(selectedFile);
-            Environment env = new Environment(map.getWidth(), map.getHeight());
+            Environment env = new Environment(map.getWidth(), map.getHeight(), map);
 
             GridLayoutManager glm = new GridLayoutManager(map);
 

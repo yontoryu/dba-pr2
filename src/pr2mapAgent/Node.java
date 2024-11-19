@@ -47,6 +47,14 @@ public class Node {
         return neighbors;
     }
 
+    public void setGCost(int gCost) {
+        this.gCost = gCost;
+    }
+
+    public void setHCost(int hCost) {
+        this.hCost = hCost;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

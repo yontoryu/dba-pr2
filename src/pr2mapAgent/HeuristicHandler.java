@@ -36,4 +36,8 @@ public class HeuristicHandler {
         last.penalize(penalty);
     }
 
+    public int getMaxRecentVisits() {
+        return maxRecentVisits;
+    }
+
 }
