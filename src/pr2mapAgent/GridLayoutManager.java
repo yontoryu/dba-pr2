@@ -5,11 +5,15 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.border.LineBorder;
+import java.util.Arrays;
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
+
+
 
 public class GridLayoutManager extends JFrame {
 
@@ -23,12 +27,60 @@ public class GridLayoutManager extends JFrame {
     private BufferedImage raccoonImage;
     private BufferedImage obstacleImage; // Image of obstacles (walls)
     private BufferedImage endImage; // Image of the target
+    private BufferedImage raccoonTarget;
+
 
     private boolean endSet = false;
     private boolean startSet = false;
     private boolean positionsSet = false;
     private int[] startPos = new int[2];
     private int[] endPos = new int[2];  // Target position
+
+    private void startMoving() {
+        if (!startSet || !endSet) {
+            JOptionPane.showMessageDialog(this, "Please set both start and target positions.");
+            return;
+        }
+
+        // Δημιουργία λίστας μονοπατιού
+        List<int[]> path = new ArrayList<>();
+        path.add(new int[]{startPos[0], startPos[1]});
+        path.add(new int[]{startPos[0] + 1, startPos[1]});
+        path.add(new int[]{startPos[0] + 2, startPos[1]});
+        path.add(new int[]{startPos[0] + 2, startPos[1] + 1});
+        path.add(new int[]{endPos[0], endPos[1]});
+
+        Timer timer = new Timer(500, null); // 500ms για κάθε βήμα
+        final int[] index = {0};
+
+        timer.addActionListener(e -> {
+            if (index[0] < path.size()) {
+                int[] currentPos = path.get(index[0]);
+                int[] prevPos = index[0] > 0 ? path.get(index[0] - 1) : null;
+
+
+                if (prevPos != null) {
+                    squares[prevPos[0]][prevPos[1]].setRaccoon(false);
+                }
+                squares[currentPos[0]][currentPos[1]].setRaccoon(true);
+                gridPanel.repaint();
+                if (Arrays.equals(currentPos, endPos)) {
+                    squares[currentPos[0]][currentPos[1]].setTargetReached(true);
+                    squares[currentPos[0]][currentPos[1]].setTarget(false);
+                    squares[currentPos[0]][currentPos[1]].setRaccoon(false);
+                    gridPanel.repaint();
+                }
+                index[0]++;
+
+            }  else {
+                ((Timer) e.getSource()).stop();
+                JOptionPane.showMessageDialog(this, "Raccoon reached the target!");
+            }
+        });
+
+        timer.start();
+    }
+
 
     public GridLayoutManager(Environment env) {
         super("GUI GridLayout Manager");
@@ -37,10 +89,11 @@ public class GridLayoutManager extends JFrame {
 
         // Load images for cells
         try {
-            grassImage = ImageIO.read(new File("grass.png"));
-            raccoonImage = ImageIO.read(new File("raccoon2.png"));
-            obstacleImage = ImageIO.read(new File("wall.png"));
-            endImage = ImageIO.read(new File("stink.png"));
+            raccoonTarget= ImageIO.read(new File("png-clipart-pixel-art-fireworks-fireworks-purple-game-removebg-preview (1).png"));
+            grassImage = ImageIO.read(new File("summer-grass.png"));
+            raccoonImage = ImageIO.read(new File("raccoon5.png"));
+            obstacleImage = ImageIO.read(new File("stone_wall_2_by_sarahstudiosart_d7l2g11-fullview.png"));
+            endImage = ImageIO.read(new File("trashbin.png"));
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
@@ -66,7 +119,7 @@ public class GridLayoutManager extends JFrame {
 
         // Add Start button
         JButton startButton = new JButton("Start");
-        startButton.addActionListener(e -> startRunning());
+        startButton.addActionListener(e -> startMoving());
         startButton.setPreferredSize(new Dimension(300, 40));
         buttonPanel.add(startButton); // Add Start button to the panel
 
@@ -123,6 +176,8 @@ public class GridLayoutManager extends JFrame {
             for (int j = 0; j < width; j++) {
                 squares[i][j].setRaccoon(false);
                 squares[i][j].setTarget(false);
+                squares[i][j].setTargetReached(false);
+
             }
         }
         gridPanel.repaint();
@@ -132,6 +187,7 @@ public class GridLayoutManager extends JFrame {
         private int row, col;
         private boolean hasRaccoon = false;
         private boolean hasTarget = false;
+        private boolean hasTargetReached = false;
 
         public CellPanel(int row, int col) {
             this.row = row;
@@ -171,6 +227,9 @@ public class GridLayoutManager extends JFrame {
         public void setRaccoon(boolean hasRaccoon) {
             this.hasRaccoon = hasRaccoon;
         }
+        public void setTargetReached(boolean hasTargetReached) {
+            this.hasTargetReached = hasTargetReached;
+        }
 
         public void setTarget(boolean hasTarget) {
             this.hasTarget = hasTarget;
@@ -192,6 +251,12 @@ public class GridLayoutManager extends JFrame {
             if (hasTarget) {
                 g.drawImage(endImage, 0, 0, getWidth(), getHeight(), null);
             }
+            if (hasTargetReached) {
+                g.drawImage(raccoonTarget, 0, 0, getWidth(), getHeight(), null);
+
+            }
         }
     }
+
+
 }
