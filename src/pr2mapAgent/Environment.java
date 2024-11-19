@@ -4,74 +4,32 @@ import java.util.Random;
 
 public class Environment {
 
-    Map map;
     int[][] path;
-    int[] startPos;
-    int[] targetPos;
+    int width;
+    int height;
+    Node[][] exploredArea;
 
-    public Environment(Map map) {
-        startPos = new int[]{0, 0};
-        targetPos = new int[]{0, 0};
-        loadMap(map);
-        setStartAndTargetRandom();
+    public Environment(int width, int height) {
+        this.width = width;
+        this.height = height;
+        exploredArea = new Node[height][width];
     }
 
-    private void loadMap(Map map) {
-        this.map = map;
+    public void setNode(int x, int y, Node n) {
+        exploredArea[x][y] = n;
     }
 
-    private void setStartAndTargetRandom() {
-        Random rand = new Random();
-        do {
-            startPos[0] = rand.nextInt(map.getHeight());
-            startPos[1] = rand.nextInt(map.getWidth());
-        }
-        while (map.getMatrix()[startPos[0]][startPos[1]] == -1);
-
-        do {
-            targetPos[0] = rand.nextInt(map.getHeight());
-            targetPos[1] = rand.nextInt(map.getWidth());
-        }
-        while (map.getMatrix()[targetPos[0]][targetPos[1]] == -1);
+    public Node getNode(int x, int y) {
+        return exploredArea[x][y];
     }
 
-    public void setStartAndTarget(int[] start, int[] target) {
-        startPos[0] = start[0];
-        startPos[1] = start[1];
-        targetPos[0] = target[0];
-        targetPos[1] = target[1];
+    public boolean isInBounds(int x, int y) {
+        return x >= 0 && x < width && y >= 0 && y < height;
     }
 
-    Map getMap() {
-        return map;
+    public boolean yetDiscovered(int x, int y) {
+        return exploredArea[x][y] != null;
     }
 
-    void printEnvironment() {
-        for (int i = 0; i < map.getHeight(); i++) {
-            for (int j = 0; j < map.getWidth(); j++) {
-                if (i == startPos[0] && j == startPos[1]) {
-                    System.out.print("[S]");
-                    continue;
-                }
-                if (i == targetPos[0] && j == targetPos[1]) {
-                    System.out.print("[T]");
-                    continue;
-                }
-                if (map.getMatrix()[i][j] == 0) {
-                    System.out.print(" ");
-                }
-                System.out.print(map.getMatrix()[i][j] + " ");
-            }
-            System.out.println();
-        }
-    }
-
-    int[] getTargetPos() {
-        return targetPos;
-    }
-
-    int[] getStartPos() {
-        return startPos;
-    }
-
+    public
 }

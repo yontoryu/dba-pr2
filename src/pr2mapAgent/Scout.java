@@ -18,12 +18,6 @@ public class Scout extends Agent {
         super();
     }
 
-//    public Scout(int[] start, int[] target) {
-//        currentPos = start.clone();
-//        targetPos = target.clone();
-//        energy = 0;
-//    }
-
     @Override
     protected void setup() {
         // Retrieve startup arguments
@@ -32,13 +26,14 @@ public class Scout extends Agent {
         if (args != null && args.length > 0) {
             currentPos = ((int[]) args[0]).clone();
             targetPos = ((int[]) args[1]).clone();
+            env = (Environment) args[2];
             System.out.println("Agent started with argument: Start - " + currentPos[0] + ", " + currentPos[1] + ", End - " + targetPos[0] + ", " + targetPos[1]);
         } else {
             System.out.println("No arguments provided.");
         }
 
         //start walking
-        addBehaviour(new WalkBehaviour(this));
+        addBehaviour(new WalkBehaviour(this, env));
     }
 
     int getEnergy() {
@@ -57,13 +52,17 @@ public class Scout extends Agent {
         this.currentPos = currentPos;
     }
 
+    int[] getTargetPos() {
+        return targetPos;
+    }
+
     void startAgent(Object[] args) {
         // Step 1: Get the JADE runtime instance
         Runtime jadeRuntime = Runtime.instance();
 
         // Step 2: Create the main container (platform)
         Profile profile = new ProfileImpl();
-        profile.setParameter(Profile.GUI, "true"); // Enable the JADE GUI
+//        profile.setParameter(Profile.GUI, "true"); // Enable the JADE GUI
 
         ContainerController mainContainer = jadeRuntime.createMainContainer(profile);
 

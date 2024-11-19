@@ -18,6 +18,7 @@ public class GridLayoutManager extends JFrame {
     private int height;
     private int width;
     private Environment env;
+    private Map map;
 
     private BufferedImage grassImage;
     private BufferedImage raccoonImage;
@@ -30,10 +31,11 @@ public class GridLayoutManager extends JFrame {
     private int[] startPos = new int[2];
     private int[] endPos = new int[2];  // Target position
 
-    public GridLayoutManager(Environment env) {
+    public GridLayoutManager(Map map) {
         super("GUI GridLayout Manager");
 
         this.env = env;
+        this.map = map;
 
         // Load images for cells
         try {
@@ -46,8 +48,8 @@ public class GridLayoutManager extends JFrame {
             System.exit(1);
         }
 
-        width = env.getMap().getWidth();
-        height = env.getMap().getHeight();
+        width = map.getWidth();
+        height = map.getHeight();
 
         gridPanel = new JPanel(new GridLayout(height, width));
         squares = new CellPanel[height][width];
@@ -109,7 +111,7 @@ public class GridLayoutManager extends JFrame {
 
     private void setCellStyle(int i, int j) {
         // Set obstacle or free cell based on matrix value
-        if (env.getMap().getMatrix()[i][j] == -1) {
+        if (map.getMatrix()[i][j] == -1) {
             squares[i][j].setBackground(Color.RED);  // Mark obstacle
         } else {
             squares[i][j].setBackground(Color.WHITE);  // Mark free cell
@@ -141,7 +143,7 @@ public class GridLayoutManager extends JFrame {
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    if (env.getMap().getMatrix()[row][col] == -1) {
+                    if (map.getMatrix()[row][col] == -1) {
                         JOptionPane.showMessageDialog(null, "Obstacle cell. Cannot place raccoon or target here.");
                         return;
                     }
@@ -181,7 +183,7 @@ public class GridLayoutManager extends JFrame {
             super.paintComponent(g);
 
             // Draw appropriate image based on cell content
-            if (env.getMap().getMatrix()[row][col] == -1) {
+            if (map.getMatrix()[row][col] == -1) {
                 g.drawImage(obstacleImage, 0, 0, getWidth(), getHeight(), null);
             } else {
                 g.drawImage(grassImage, 0, 0, getWidth(), getHeight(), null);

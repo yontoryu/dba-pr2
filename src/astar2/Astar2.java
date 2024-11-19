@@ -23,12 +23,13 @@ public class Astar2 {
     static int maxRecentVisits = 50;
     static LinkedList<Node> lastVisitiedNodes = new LinkedList<>();
 
-    static Node[][] graph = new Node[height][width];
+    static Node[][] exploredArea = new Node[height][width];
 
     public static void main(String[] args) {
         moveAgentStepByStep();
     }
 
+    //Walk Behaviour action()
     public static void moveAgentStepByStep() {
         Node current = start;
         current.gCost = 0;
@@ -58,9 +59,10 @@ public class Astar2 {
         printKnownGrid(current);
     }
 
+    //Step Behaviour
     //adds currentNode as well as all of his Neighbors to the graph and sets the Neighbors of currentNode
     private static void discoverArea(Node currentNode) {
-        graph[currentNode.y][currentNode.x] = currentNode;
+        exploredArea[currentNode.y][currentNode.x] = currentNode;
 
         int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
@@ -70,21 +72,22 @@ public class Astar2 {
 
             if (isInBounds(nx, ny)) {
                 Node neighborNode = null;
-                if (graph[ny][nx] == null) {
+                if (exploredArea[ny][nx] == null) {
                     boolean isObstacle = grid[ny][nx] == -1;
                     neighborNode = new Node(nx, ny, isObstacle);
-                    graph[ny][nx] = neighborNode;
+                    exploredArea[ny][nx] = neighborNode;
                 }
-                neighborNode = graph[ny][nx];
+                neighborNode = exploredArea[ny][nx];
                 neighborNode.hCost = heuristicManhattan(neighborNode);
                 neighborNode.gCost = 1;
 
                 currentNode.addNeighbor(neighborNode);
-                graph[ny][nx] = neighborNode;
+                exploredArea[ny][nx] = neighborNode;
             }
         }
     }
 
+    //Step Behaviour action()
     private static Node getBestStep(Node current) {
         List<Node> validNeighbors = getValidNeighbors(current);
 
@@ -110,6 +113,7 @@ public class Astar2 {
         return bestNeighbor;
     }
 
+    //Step Behaviour
     private static List<Node> getValidNeighbors(Node currentNode) {
         List<Node> validNeighbors = new ArrayList<>();
         List<Node> allNeighbors = currentNode.getNeighbors();
@@ -123,18 +127,22 @@ public class Astar2 {
         return validNeighbors;
     }
 
+    //Environment
     private static boolean isInBounds(int x, int y) {
         return x >= 0 && x < width && y >= 0 && y < height;
     }
 
+    //Heuristic Calc
     private static int heuristicManhattan(Node a) {
         return Math.abs(a.x - goal.x) + Math.abs(a.y - goal.y);
     }
 
+    //Heuristic Calc
     private static int heuristicEuclidean(Node a) {
         return (int) (Math.pow(Math.abs(a.x - goal.x), 2) + Math.pow(Math.abs(a.y - goal.y), 2));
     }
 
+    //Heuristic Calc
     private static void penalizeDynamically(Node current, Node last) {
         int penalty = basePenalty;
         int position = 0;
@@ -150,6 +158,7 @@ public class Astar2 {
         last.penalize(penalty);
     }
 
+    //Walk Behaviour
     private static void updateRecentVisits(Node current) {
         lastVisitiedNodes.addFirst(current); // Add the current node to recent visits
         if (lastVisitiedNodes.size() > maxRecentVisits) {
@@ -166,9 +175,9 @@ public class Astar2 {
                 else if (i == goal.y && j == goal.x) {
                     System.out.print("T  ");
                 }
-                else if (graph[i][j] == null || !graph[i][j].isObstacle) {
+                else if (exploredArea[i][j] == null || !exploredArea[i][j].isObstacle) {
                     System.out.print(".  ");
-                } else if (graph[i][j] != null) {
+                } else if (exploredArea[i][j] != null) {
                     System.out.print("#  ");
                 } else {
                     System.out.print("   ");
@@ -188,14 +197,14 @@ public class Astar2 {
                 else if (i == currentNode.y && j == currentNode.x) {
                     System.out.printf("%c%-2d%c ", '[', currentNode.fCost(), ']');
                 }
-                else if (graph[i][j] == null) {
+                else if (exploredArea[i][j] == null) {
                     System.out.print(".    ");
                 }
-                else if (graph[i][j].isObstacle) {
+                else if (exploredArea[i][j].isObstacle) {
                     System.out.print("#    ");
                 }
                 else {
-                    System.out.printf("%-5d", graph[i][j].fCost());
+                    System.out.printf("%-5d", exploredArea[i][j].fCost());
                 }
             }
             System.out.println();
