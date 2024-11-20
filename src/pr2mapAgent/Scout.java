@@ -7,6 +7,7 @@ import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.core.Agent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Scout extends Agent {
@@ -34,7 +35,7 @@ public class Scout extends Agent {
         } else {
             System.out.println("No arguments provided.");
         }
-
+        walkBehaviour = new WalkBehaviour(this, env);
         //start walking
         addBehaviour(new WalkBehaviour(this, env));
     }
@@ -85,8 +86,15 @@ public class Scout extends Agent {
             e.printStackTrace();
         }
     }
-    public List<int[]> getVisitedPath() {
-        return walkBehaviour.getVisitedPath();  // walkBehaviour είναι το αντικείμενο WalkBehaviour που δημιουργείται στην setup()
+    private List<int[]> visitedPath = new ArrayList<>();
+
+    void setVisitedPath(List<int[]> path) {
+        this.visitedPath = path;
     }
+
+    public List<int[]> getVisitedPath() {
+        return visitedPath;
+    }
+
 
 }

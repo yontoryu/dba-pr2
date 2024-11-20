@@ -40,7 +40,6 @@ public class WalkBehaviour extends Behaviour {
         return visitedPath;
     }
 
-
     @Override
     public void action() {
         if (!current.equals(target) && !waitingForStep) {
@@ -49,10 +48,21 @@ public class WalkBehaviour extends Behaviour {
         }
     }
 
+
     @Override
     public boolean done() {
-        return current.equals(target);
+        boolean finished = current.equals(target);
+        if (finished) {
+            List<int[]> path = getVisitedPath();
+            System.out.println("Path found: ");
+            for (int[] coords : path) {
+                System.out.println("[" + coords[0] + ", " + coords[1] + "]");
+            }
+            scout.setVisitedPath(path);
+        }
+        return finished;
     }
+
 
     public void notifyStepComplete() {
         this.waitingForStep = false;

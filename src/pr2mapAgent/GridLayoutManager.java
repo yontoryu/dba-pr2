@@ -37,32 +37,6 @@ public class GridLayoutManager extends JFrame {
     private int[] startPos = new int[2];
     private int[] endPos = new int[2];  // Target position
 
-    public void startMoving(List<int[]> path) {
-        Timer timer = new Timer(500, null); // 500ms για κάθε βήμα
-        final int[] index = {0};
-
-        timer.addActionListener(e -> {
-            if (index[0] < path.size()) {
-                int[] currentPos = path.get(index[0]);
-                int[] prevPos = index[0] > 0 ? path.get(index[0] - 1) : null;
-
-                if (prevPos != null) {
-                    squares[prevPos[1]][prevPos[0]].setRaccoon(false);
-                }
-                squares[currentPos[1]][currentPos[0]].setRaccoon(true);
-                gridPanel.repaint();
-                index[0]++;
-            } else {
-                ((Timer) e.getSource()).stop();
-                JOptionPane.showMessageDialog(this, "Raccoon reached the target!");
-            }
-        });
-
-        timer.start();
-    }
-
-
-
 
     public GridLayoutManager(Environment env , Map map) {
         super("GUI GridLayout Manager");
@@ -155,7 +129,37 @@ public class GridLayoutManager extends JFrame {
     public int[] getEndPos() {
         return endPos;
     }
+    public void startMoving(List<int[]> path) {
+        Timer timer = new Timer(500, null); // 500ms για κάθε βήμα
+        final int[] index = {0};
 
+        timer.addActionListener(e -> {
+            if (index[0] < path.size()) {
+                int[] currentPos = path.get(index[0]);
+                int[] prevPos = index[0] > 0 ? path.get(index[0] - 1) : null;
+
+
+                if (prevPos != null) {
+                    squares[prevPos[0]][prevPos[1]].setRaccoon(false);
+                }
+                squares[currentPos[0]][currentPos[1]].setRaccoon(true);
+                gridPanel.repaint();
+                if (Arrays.equals(currentPos, endPos)) {
+                    squares[currentPos[0]][currentPos[1]].setTargetReached(true);
+                    squares[currentPos[0]][currentPos[1]].setTarget(false);
+                    squares[currentPos[0]][currentPos[1]].setRaccoon(false);
+                    gridPanel.repaint();
+                }
+                index[0]++;
+
+            }  else {
+                ((Timer) e.getSource()).stop();
+                JOptionPane.showMessageDialog(this, "Raccoon reached the target!");
+            }
+        });
+
+        timer.start();
+    }
     private void createCells() {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
