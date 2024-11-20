@@ -34,7 +34,7 @@ public class Main {
             Map map = new Map(selectedFile);
             Environment env = new Environment(map.getWidth(), map.getHeight(), map);
 
-            GridLayoutManager glm = new GridLayoutManager(map);
+            GridLayoutManager glm = new GridLayoutManager(env , map);
 
             while (!glm.positionsSet()) {
                 try {

@@ -83,7 +83,7 @@ public class GridLayoutManager extends JFrame {
     }
 
 
-    public GridLayoutManager(Environment env) {
+    public GridLayoutManager(Environment env , Map map) {
         super("GUI GridLayout Manager");
 
         this.env = env;
@@ -121,7 +121,7 @@ public class GridLayoutManager extends JFrame {
 
         // Add Start button
         JButton startButton = new JButton("Start");
-        startButton.addActionListener(e -> startMoving());
+        startButton.addActionListener(e -> startRunning());
         startButton.setPreferredSize(new Dimension(300, 40));
         buttonPanel.add(startButton); // Add Start button to the panel
 
