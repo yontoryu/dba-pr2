@@ -37,20 +37,7 @@ public class GridLayoutManager extends JFrame {
     private int[] startPos = new int[2];
     private int[] endPos = new int[2];  // Target position
 
-    private void startMoving() {
-        if (!startSet || !endSet) {
-            JOptionPane.showMessageDialog(this, "Please set both start and target positions.");
-            return;
-        }
-
-        // Δημιουργία λίστας μονοπατιού
-        List<int[]> path = new ArrayList<>();
-        path.add(new int[]{startPos[0], startPos[1]});
-        path.add(new int[]{startPos[0] + 1, startPos[1]});
-        path.add(new int[]{startPos[0] + 2, startPos[1]});
-        path.add(new int[]{startPos[0] + 2, startPos[1] + 1});
-        path.add(new int[]{endPos[0], endPos[1]});
-
+    public void startMoving(List<int[]> path) {
         Timer timer = new Timer(500, null); // 500ms για κάθε βήμα
         final int[] index = {0};
 
@@ -59,21 +46,13 @@ public class GridLayoutManager extends JFrame {
                 int[] currentPos = path.get(index[0]);
                 int[] prevPos = index[0] > 0 ? path.get(index[0] - 1) : null;
 
-
                 if (prevPos != null) {
-                    squares[prevPos[0]][prevPos[1]].setRaccoon(false);
+                    squares[prevPos[1]][prevPos[0]].setRaccoon(false);
                 }
-                squares[currentPos[0]][currentPos[1]].setRaccoon(true);
+                squares[currentPos[1]][currentPos[0]].setRaccoon(true);
                 gridPanel.repaint();
-                if (Arrays.equals(currentPos, endPos)) {
-                    squares[currentPos[0]][currentPos[1]].setTargetReached(true);
-                    squares[currentPos[0]][currentPos[1]].setTarget(false);
-                    squares[currentPos[0]][currentPos[1]].setRaccoon(false);
-                    gridPanel.repaint();
-                }
                 index[0]++;
-
-            }  else {
+            } else {
                 ((Timer) e.getSource()).stop();
                 JOptionPane.showMessageDialog(this, "Raccoon reached the target!");
             }
@@ -81,6 +60,8 @@ public class GridLayoutManager extends JFrame {
 
         timer.start();
     }
+
+
 
 
     public GridLayoutManager(Environment env , Map map) {
@@ -121,7 +102,31 @@ public class GridLayoutManager extends JFrame {
 
         // Add Start button
         JButton startButton = new JButton("Start");
-        startButton.addActionListener(e -> startRunning());
+        startButton.addActionListener(e -> {
+            Scout scout = new Scout();
+
+
+            new Thread(() -> {
+                scout.startAgent(new Object[]{getStartPos(), getEndPos(), env});
+
+
+                List<int[]> path = scout.getVisitedPath();
+
+
+                if (path != null && !path.isEmpty()) {
+
+                    SwingUtilities.invokeLater(() -> {
+                        startMoving(path);
+                    });
+                } else {
+
+                    SwingUtilities.invokeLater(() -> {
+                        JOptionPane.showMessageDialog(this, "No path found.");
+                    });
+                }
+            }).start();
+        });
+
         startButton.setPreferredSize(new Dimension(300, 40));
         buttonPanel.add(startButton); // Add Start button to the panel
 

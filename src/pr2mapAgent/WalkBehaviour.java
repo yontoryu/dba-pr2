@@ -1,7 +1,9 @@
 package pr2mapAgent;
 import jade.core.behaviours.Behaviour;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public class WalkBehaviour extends Behaviour {
 
@@ -30,6 +32,14 @@ public class WalkBehaviour extends Behaviour {
         lastVisitiedNodes = new LinkedList<>();
 
     }
+    public List<int[]> getVisitedPath() {
+        List<int[]> visitedPath = new ArrayList<>();
+        for (Node node : lastVisitiedNodes) {
+            visitedPath.add(new int[]{node.x, node.y});
+        }
+        return visitedPath;
+    }
+
 
     @Override
     public void action() {

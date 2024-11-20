@@ -7,9 +7,12 @@ import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.core.Agent;
 
+import java.util.List;
+
 public class Scout extends Agent {
 
     Environment env;
+    private WalkBehaviour walkBehaviour;
     int energy;
     int[] currentPos;
     int[] targetPos;
@@ -35,7 +38,12 @@ public class Scout extends Agent {
         //start walking
         addBehaviour(new WalkBehaviour(this, env));
     }
-
+    boolean isDone() {
+        if (walkBehaviour != null) {
+            return walkBehaviour.done();
+        }
+        return false;
+    }
     int getEnergy() {
         return energy;
     }
@@ -76,6 +84,9 @@ public class Scout extends Agent {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    public List<int[]> getVisitedPath() {
+        return walkBehaviour.getVisitedPath();  // walkBehaviour είναι το αντικείμενο WalkBehaviour που δημιουργείται στην setup()
     }
 
 }
